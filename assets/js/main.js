@@ -5,41 +5,30 @@ const linkUp = getHTML('.link-up');
 
 let viewBurgerMenu = false;
 
+
 const links = Array.from(getHTML('.header-nav__link', 1));
 
-const reviewsHeight = getHTML('.section-reviews')
-			.getBoundingClientRect()
-			.height;
-const sliderHeight = getHTML('.top-slider')
-			.getBoundingClientRect()
-			.height;
-const pageHeight = Math.max( 
-	document.body.scrollHeight, 
-	document.body.offsetHeight, 
-  document.documentElement.clientHeight, 
-  document.documentElement.scrollHeight, 
-  document.documentElement.offsetHeight
-);
+const reviewsHeight = 
+	getBoundingHeight(getHTML('.section-reviews'));			
+const sliderHeight = 
+	getBoundingHeight(getHTML('.top-slider'));
 
+let windowWidth = getWindowWidth();
+let scrollHeight = getScrollHeight();
 let scrollPoint = window.pageYOffset;
 let scrollDirection = null;
-
-const sectionsName = ['header', '.section-about', '.section-services', '.section-pricing', '.section-team', '.section-blog'];
 
 const addClass = (target, str) => target.classList.add(str);
 const delClass = (target, str) => target.classList.remove(str);
 const hasClass = (target, str) => target.className.includes(str);
 
 const sections = [
-	...getHTML(sectionsName)
+	...getHTML('[data-scroll]', 1)
 ];
 
 let coords = [
 	...sections.map(getCoords)
 ];
-
-const getWindowW = () => window.innerWidth;
-let windowWidth = getWindowW();
 
 
 const showMenu = () => menu.classList.toggle('active');
@@ -73,7 +62,9 @@ function watchHeader() {
 		if (scrollPoint > top - 50 && scrollPoint < bottom) {
 			selectHeaderLink(idx);
 		}
-		if (idx === coords.length - 1 && scrollPoint > bottom) {
+		if ((idx === coords.length - 1 && 
+				 scrollPoint > bottom) ||
+				window.innerHeight + scrollPoint >= scrollHeight) {
 			selectHeaderLink(idx + 1);
 		}
 	})
@@ -113,25 +104,10 @@ function getCoords(section) {
 	return coords;
 }
 
-function getHTML(selector, mode = 0) {
-	if (typeof selector === 'string') {
-		if (!mode) return document.querySelector(selector);
-		
-		return document.querySelectorAll(selector);
-	}
-
-	if (typeof selector === 'object') {
-		return selector.map(el => document.querySelector(el))
-	}
-}
-
 function menuHandler() {
-	const realWindowW = windowWidth;
-	windowWidth = 900;
 	viewBurgerMenu = !viewBurgerMenu;
 	showMenu();
 	setScrollDirection();
-	windowWidth = realWindowW;
 }
 
 menu.onclick = () => menuHandler();
@@ -146,5 +122,7 @@ headerNav.onclick = (e) => headerSelection(e);
 
 window.onresize = () => {
 	coords = [...sections.map(getCoords)];
-	windowWidth = getWindowW();
+	windowWidth = getWindowWidth();
+	scrollHeight = getScrollHeight();
+	setScrollDirection();
 }
