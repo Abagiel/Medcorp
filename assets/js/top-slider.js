@@ -9,14 +9,6 @@ let time = 10000;
 
 autoSlide();
 
-function getHTML(selector, mode = 0) {
-	if (!mode) {
-		return document.querySelector(selector);
-	}
-
-	return document.querySelectorAll(selector);
-}
-
 function moveSlider(e) {
 	const classes = e.target.className;
 	const direction = classes.includes('navi--right')

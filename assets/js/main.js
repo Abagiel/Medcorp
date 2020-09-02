@@ -3,6 +3,8 @@ const headerRight = getHTML('.header-right');
 const headerNav = getHTML('.header-nav');
 const linkUp = getHTML('.link-up');
 
+let viewBurgerMenu = false;
+
 const links = Array.from(getHTML('.header-nav__link', 1));
 
 const reviewsHeight = getHTML('.section-reviews')
@@ -32,9 +34,12 @@ const sections = [
 	...getHTML(sectionsName)
 ];
 
-const coords = [
+let coords = [
 	...sections.map(getCoords)
 ];
+
+const getWindowW = () => window.innerWidth;
+let windowWidth = getWindowW();
 
 
 const showMenu = () => menu.classList.toggle('active');
@@ -75,6 +80,8 @@ function watchHeader() {
 }
 
 function setScrollDirection() {
+	if (windowWidth <= 889 && !viewBurgerMenu) return;
+
 	if (window.pageYOffset > scrollPoint && 
 		  scrollDirection !== 'down') {
 		scrollDirection = 'down';
@@ -118,7 +125,16 @@ function getHTML(selector, mode = 0) {
 	}
 }
 
-menu.onclick = () => showMenu();
+function menuHandler() {
+	const realWindowW = windowWidth;
+	windowWidth = 900;
+	viewBurgerMenu = !viewBurgerMenu;
+	showMenu();
+	setScrollDirection();
+	windowWidth = realWindowW;
+}
+
+menu.onclick = () => menuHandler();
 
 document.onscroll = () => {
 	showByOffsetY(window.innerHeight, linkUp, 'active');
@@ -127,3 +143,8 @@ document.onscroll = () => {
 }
 
 headerNav.onclick = (e) => headerSelection(e);
+
+window.onresize = () => {
+	coords = [...sections.map(getCoords)];
+	windowWidth = getWindowW();
+}

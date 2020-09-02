@@ -8,14 +8,6 @@ let reviewInterval = null;
 
 autoChangeReview();
 
-function getHTML(selector, mode = 0) {
-	if (!mode) {
-		return document.querySelector(selector);
-	}
-
-	return document.querySelectorAll(selector);
-}
-
 function autoChangeReview() {
 	reviewInterval = setInterval(changeReview, reviewTime);
 }
